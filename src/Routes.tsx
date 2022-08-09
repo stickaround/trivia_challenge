@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import { TriviaProvider } from './context/Trivia';
 import { Home } from './pages/Home';
@@ -14,6 +14,7 @@ function TriviaRoutes() {
             <Route path='/' element={<Home />} />
             <Route path='/paper/:id' element={<Paper />} />
             <Route path='/result' element={<Result />} />
+            <Route path='*' element={<Navigate to='/' replace />} />
           </Routes>
         </TriviaProvider>
       </BrowserRouter>

@@ -52,7 +52,7 @@ function Paper() {
       </h1>
       <div className='mt-36 p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700'>
         <p
-          className='mb-2 text-2xl tracking-tight text-gray-900 dark:text-white'
+          className='mb-2 text-2xl tracking-tight text-gray-900 break-all dark:text-white'
           dangerouslySetInnerHTML={{ __html: current?.question ?? '' }}
         />
         <div className='m-10'>
@@ -66,7 +66,13 @@ function Paper() {
               onChange={() => handleAnswer('True')}
               disabled={isFinished}
             />
-            <label className='block ml-2 text-2xl font-medium text-gray-900 dark:text-gray-300'>
+            <label
+              className={`block ml-2 text-2xl font-medium dark:text-gray-300 ${
+                isFinished && current?.correct_answer === 'True'
+                  ? 'text-sky-600'
+                  : 'text-gray-900'
+              }`}
+            >
               True
             </label>
           </div>
@@ -80,14 +86,20 @@ function Paper() {
               onChange={() => handleAnswer('False')}
               disabled={isFinished}
             />
-            <label className='block ml-2 text-2xl font-medium text-gray-900 dark:text-gray-300'>
+            <label
+              className={`block ml-2 text-2xl font-medium text-gray-900 dark:text-gray-300 ${
+                isFinished && current?.correct_answer === 'False'
+                  ? 'text-sky-600'
+                  : 'text-gray-900'
+              }`}
+            >
               False
             </label>
           </div>
         </div>
       </div>
 
-      <div className='w-[420px]  flex justify-between items-center absolute bottom-6'>
+      <div className='w-[calc(100%-80px)]  flex justify-between items-center absolute bottom-6'>
         <button
           className='w-24 text-base rounded-md bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-400 py-2 px-1 disabled:bg-indigo-300'
           onClick={handlePreviousButtonClick}
