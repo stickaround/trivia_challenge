@@ -1,15 +1,27 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { AnswerRow } from './AnswerRow';
 import { useTriviaProvider } from '../../context/Trivia';
 import { getProblems } from '../../services/api';
 
-function Home() {
+function Result() {
+  const [correctCount, setCorrectCount] = React.useState(0);
   const [isFetching, setIsFetching] = React.useState(false);
-  const { setProblems, isFinished } = useTriviaProvider();
   const navigate = useNavigate();
+  const { problems, setProblems, setIsFinished } = useTriviaProvider();
 
-  async function handleBeginButtonClick() {
+  React.useEffect(() => {
+    let count = 0;
+    problems.forEach((problem) => {
+      if (problem.answer === problem.correct_answer) {
+        count += 1;
+      }
+    });
+    setCorrectCount(count);
+  }, [problems]);
+
+  async function handlePlayAgainButtonClick() {
     try {
       setIsFetching(true);
       const {
@@ -21,8 +33,9 @@ function Home() {
         ...problem,
       }));
       setProblems(problems);
-      localStorage.setItem('problems', JSON.stringify(problems));
+      setIsFinished(false);
       localStorage.setItem('isFinished', 'false');
+      localStorage.setItem('problems', JSON.stringify(problems));
       navigate('/paper/1');
     } catch (err) {
     } finally {
@@ -31,22 +44,23 @@ function Home() {
   }
 
   return (
-    <div className='w-[500px] h-[800px] mx-auto rounded-lg bg-white ring-2 ring-indigo-600 px-16 py-10 text-center'>
+    <div className='w-[500px] h-[800px] mx-auto rounded-lg bg-white ring-2 ring-indigo-600 px-4 py-10 text-center'>
       <h1 className='text-slate-800 text-5xl text-center font-bold'>
-        Welcome to the trivia challenge!
+        You scored
+        <br />
+        {correctCount} / 10
       </h1>
-      <p className='text-slate-600 mt-36 text-center text-3xl'>
-        You will be presented 10 True or False questions.
-      </p>
-      <p className='text-slate-600 mt-36 text-center text-3xl'>
-        Can you score 100%?
-      </p>
+      <div className='h-[500px] my-5 overflow-y-scroll'>
+        {problems.map((problem) => (
+          <AnswerRow key={problem.id} problemWithAnswer={problem} />
+        ))}
+      </div>
 
       <button
-        className='text-3xl rounded-md bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-400 py-2 px-5 mt-32 disabled:bg-indigo-300'
-        onClick={handleBeginButtonClick}
+        className='text-3xl rounded-md bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-400 py-2 px-5 mt-10 disabled:bg-indigo-300'
         type='button'
-        disabled={isFetching || !isFinished}
+        onClick={handlePlayAgainButtonClick}
+        disabled={isFetching}
       >
         <div className='flex items-center'>
           {isFetching && (
@@ -66,11 +80,11 @@ function Home() {
               />
             </svg>
           )}
-          {isFinished ? 'BEGIN' : 'IN PROGRESS'}
+          PLAY AGAIN?
         </div>
       </button>
     </div>
   );
 }
 
-export { Home };
+export { Result };
