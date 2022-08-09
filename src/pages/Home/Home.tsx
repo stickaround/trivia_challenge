@@ -6,8 +6,15 @@ import { getProblems } from '../../services/api';
 
 function Home() {
   const [isFetching, setIsFetching] = React.useState(false);
-  const { setProblems, isFinished } = useTriviaProvider();
+  const { setProblems, setIsFinished, isFinished, isLoaded } =
+    useTriviaProvider();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (!isFinished && isLoaded) {
+      navigate('/paper/1');
+    }
+  }, [isFinished, isLoaded, navigate]);
 
   async function handleBeginButtonClick() {
     try {
@@ -21,6 +28,7 @@ function Home() {
         ...problem,
       }));
       setProblems(problems);
+      setIsFinished(false);
       localStorage.setItem('problems', JSON.stringify(problems));
       localStorage.setItem('isFinished', 'false');
       navigate('/paper/1');
@@ -66,7 +74,7 @@ function Home() {
               />
             </svg>
           )}
-          {isFinished ? 'BEGIN' : 'IN PROGRESS'}
+          BEGIN
         </div>
       </button>
     </div>

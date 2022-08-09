@@ -10,14 +10,17 @@ const TriviaContext = React.createContext<
   | {
       isFinished: boolean;
       problems: Problem[];
+      isLoaded: boolean;
       setProblems: (problems: Problem[]) => void;
       setIsFinished: (isFinished: boolean) => void;
+      setIsLoaded: (isLoaded: boolean) => void;
     }
   | undefined
 >(undefined);
 
 function TriviaProvider({ children }: Props) {
   const [problems, setProblems] = React.useState<Problem[]>([]);
+  const [isLoaded, setIsLoaded] = React.useState(false);
   const [isFinished, setIsFinished] = React.useState(false);
 
   React.useEffect(() => {
@@ -27,16 +30,19 @@ function TriviaProvider({ children }: Props) {
       ) as unknown as Problem[]
     );
     setIsFinished(JSON.parse(localStorage.getItem('isFinished') || 'true'));
+    setIsLoaded(true);
   }, []);
 
   const contextValue = React.useMemo(
     () => ({
       isFinished,
+      isLoaded,
       problems,
       setProblems,
       setIsFinished,
+      setIsLoaded,
     }),
-    [isFinished, problems, setProblems, setIsFinished]
+    [isFinished, isLoaded, problems, setProblems, setIsFinished, setIsLoaded]
   );
 
   return (

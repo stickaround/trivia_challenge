@@ -39,7 +39,7 @@ function AnswerRow({ problemWithAnswer }: Props) {
         </svg>
       )}
       <div
-        className='text-left col-span-7 pr-2'
+        className='text-left col-span-7 pr-2 break-all'
         dangerouslySetInnerHTML={{ __html: problemWithAnswer.question }}
       ></div>
     </div>
