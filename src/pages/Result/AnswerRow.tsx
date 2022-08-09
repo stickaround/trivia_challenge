@@ -6,7 +6,7 @@ type Props = {
 
 function AnswerRow({ problemWithAnswer }: Props) {
   return (
-    <div className='flex items-center p-2 grid grid-cols-8'>
+    <div className='items-center p-2 grid grid-cols-8'>
       {problemWithAnswer.answer === problemWithAnswer.correct_answer ? (
         <svg
           className='w-8 h-8 text-green-600 col-span-1'

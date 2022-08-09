@@ -9,10 +9,15 @@ function Result() {
   const [correctCount, setCorrectCount] = React.useState(0);
   const [isFetching, setIsFetching] = React.useState(false);
   const navigate = useNavigate();
-  const { problems, setProblems, setIsFinished } = useTriviaProvider();
+  const { problems, isFinished, setProblems, setIsFinished } =
+    useTriviaProvider();
 
   React.useEffect(() => {
     let count = 0;
+    if (!isFinished) {
+      navigate('/paper/1');
+    }
+
     problems.forEach((problem) => {
       if (problem.answer === problem.correct_answer) {
         count += 1;
