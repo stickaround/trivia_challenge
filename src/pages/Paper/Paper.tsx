@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import { useTriviaProvider } from '../../context/Trivia';
 import { Problem } from '../../types/index';
@@ -8,7 +8,8 @@ function Paper() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [current, setCurrent] = React.useState<Problem | null>(null);
-  const { problems } = useTriviaProvider();
+  const { problems, isFinished, setProblems, setIsFinished } =
+    useTriviaProvider();
 
   React.useEffect(() => {
     setCurrent(
@@ -24,45 +25,62 @@ function Paper() {
     navigate(`/paper/${(current?.id ?? 1) + 1}`);
   }
 
+  function handleAnswer(answer: 'True' | 'False') {
+    current && setCurrent({ ...current, answer });
+    const updated = problems.map((problem) => {
+      if (problem.id.toString() === id) {
+        return { ...problem, answer };
+      }
+      return {
+        ...problem,
+      };
+    });
+    setProblems(updated);
+    localStorage.setItem('problems', JSON.stringify(updated));
+  }
+
+  function handleFinishButtonClick() {
+    setIsFinished(true);
+    localStorage.setItem('isFinished', 'true');
+    navigate('/result');
+  }
+
   return (
     <div className='w-[500px] h-[800px] mx-auto rounded-lg bg-white ring-2 ring-indigo-600 px-10 py-10 text-center relative'>
       <h1 className='text-slate-800 text-5xl text-center font-bold'>
         {current?.category}
       </h1>
       <div className='mt-36 p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700'>
-        <p className='mb-2 text-2xl tracking-tight text-gray-900 dark:text-white'>
-          {current?.question}
-        </p>
-
+        <p
+          className='mb-2 text-2xl tracking-tight text-gray-900 dark:text-white'
+          dangerouslySetInnerHTML={{ __html: current?.question ?? '' }}
+        />
         <div className='m-10'>
           <div className='flex items-center mb-4'>
             <input
-              id='country-option-1'
+              id='answer-true'
               type='radio'
-              name='countries'
-              value='USA'
+              name='answer'
               className='w-6 h-6 border-gray-300'
-              checked
+              checked={current?.answer === 'True'}
+              onChange={() => handleAnswer('True')}
+              disabled={isFinished}
             />
-            <label
-              // for='country-option-1'
-              className='block ml-2 text-2xl font-medium text-gray-900 dark:text-gray-300'
-            >
+            <label className='block ml-2 text-2xl font-medium text-gray-900 dark:text-gray-300'>
               True
             </label>
           </div>
           <div className='flex items-center'>
             <input
-              id='country-option-2'
+              id='answer-false'
               type='radio'
-              name='countries'
-              value='Germany'
+              name='answer'
               className='w-6 h-6 border-gray-300'
+              checked={current?.answer === 'False'}
+              onChange={() => handleAnswer('False')}
+              disabled={isFinished}
             />
-            <label
-              // for='country-option-2'
-              className='block ml-2 text-2xl font-medium text-gray-900 dark:text-gray-300'
-            >
+            <label className='block ml-2 text-2xl font-medium text-gray-900 dark:text-gray-300'>
               False
             </label>
           </div>
@@ -78,7 +96,7 @@ function Paper() {
         >
           Previous
         </button>
-        <span className='text-3xl'>{`${id} / 10`}</span>
+        <span className='text-3xl'>{`${id} of 10`}</span>
 
         {id !== '10' ? (
           <button
@@ -88,14 +106,23 @@ function Paper() {
           >
             Next
           </button>
-        ) : (
+        ) : !isFinished ? (
           <button
             className='w-24 text-base rounded-md bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-400 py-2 px-1 disabled:bg-indigo-300'
-            // onClick={handleFinishClick}
+            onClick={handleFinishButtonClick}
             type='button'
           >
             Finish
           </button>
+        ) : (
+          <Link to='/result'>
+            <button
+              className='w-24 text-base rounded-md bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-400 py-2 px-1 disabled:bg-indigo-300'
+              type='button'
+            >
+              See Result
+            </button>
+          </Link>
         )}
       </div>
     </div>
